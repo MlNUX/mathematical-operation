@@ -1,7 +1,17 @@
 package minux.model;
 
+/**
+ * The class for the functionality of the times-operation.
+ *
+ * @author minux
+ */
 public class Times extends MathematicalOperation implements Formula {
-
+    /**
+     * Constructor the create a times-operation.
+     *
+     * @param formulas list of multiplier
+     *                 -> a multiplier doesn't have to be a number. It could also be a term like (2 + 1)*3
+     */
     public Times(Formula... formulas) {
         super(formulas);
     }

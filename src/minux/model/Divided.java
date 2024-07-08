@@ -1,9 +1,17 @@
 package minux.model;
 
-import annotation.DevideByZero;
-
+/**
+ * The class for the functionality of the divide-operation.
+ *
+ * @author minux
+ */
 public class Divided extends MathematicalOperation implements Formula {
-    @DevideByZero
+    /**
+     * Constructor to create a divide-operation.
+     *
+     * @param formulas list of divisors
+     *                 -> a divisor doesn't have to be a number. It could also be a term like (2 + 1)*3
+     */
     public Divided(Formula... formulas) {
         super(formulas);
     }

@@ -2,25 +2,24 @@ import minux.model.Parser;
 
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args) {
-        //Predictable p = new Plus(new Number(5),new Bracket(new Times(new Number(3),new Bracket(new Minus(new Number(7), new Number(5))))));
-/*
-        Formula a = new Times(new Number(3), new Plus(new Number(5), new Number(5)));
-        Formula b = new Plus(new Times(new Number(3),new Number(5)),new Number(5));
-        Formula c = new Times(new Number(3),new Bracket(new Plus(new Number(5),new Number(5))));
-
-        System.out.println(a.print());
-        System.out.println(a.calculate());
-        System.out.println(b.print());
-        System.out.println(b.calculate());
-        System.out.println(c.print());
-        System.out.println(c.calculate());
+/**
+ * Main class to start the program and get the user input.
+ *
+ * @author minux
  */
-        Scanner sc = new Scanner(System.in);
-        while (true) {
+public class Main {
 
-           System.out.println(Parser.parse(sc.nextLine()).calculate());
+    /**
+     * Main function.
+     *
+     * @param args nothing
+     */
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+         // I know its not the best way to use a while loop but it's still in progress.
+        // TODO Improve the wile loop. So that it uses a boolean variable.
+        while (true) {
+            System.out.println(Parser.parse(sc.nextLine()).calculate());
         }
     }
 }

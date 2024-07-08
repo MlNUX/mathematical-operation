@@ -1,7 +1,17 @@
 package minux.model;
 
+/**
+ * The class for the functionality of the plus-operation.
+ *
+ * @author minux
+ */
 public class Plus extends MathematicalOperation implements Formula {
-
+    /**
+     * Constructor to create a plus-operation.
+     *
+     * @param formulas list of addend
+     *                 -> a addend doesn't have to be a number. It could also be a term like (2 + 1)*3
+     */
     public Plus(Formula... formulas) {
         super(formulas);
     }

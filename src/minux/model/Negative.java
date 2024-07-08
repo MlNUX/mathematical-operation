@@ -1,5 +1,11 @@
 package minux.model;
 
+/**
+ * This class is in progress. I don't know whether i need this class.
+ *
+ * @author minux
+ */
+// TODO Use this class or delete it!
 public class Negative implements Formula {
     private Formula x;
 
