@@ -1,4 +1,4 @@
-import minux.model.Parser;
+import minux.model.parsing.Parser;
 
 import java.util.Scanner;
 
