@@ -23,6 +23,10 @@ import java.util.Stack;
  */
 public final class Parser {
 
+    private static final char CLOSED_BRACKET = ')';
+    private static final char B = 'b';
+    private static final char TREESIGN = '#';
+    private static final char OPEN_BRACKET = '(';
     private static List<Node> subTrees = new LinkedList<>();
 
     /**
@@ -40,14 +44,14 @@ public final class Parser {
     public static Formula parse(final String expression) {
         Stack<Character> expressionStack = new Stack<>();
         for (char c : expression.toCharArray()) {
-            if (c == ')') {
+            if (c == CLOSED_BRACKET) {
                 int index = subTrees.size();
                 subTrees.add(createTree(findOpenBracket(expressionStack)));
                 for (char c1 : ("" + index).toCharArray()) {
                     expressionStack.push(c1);
                 }
-                expressionStack.push('b');
-                expressionStack.push('#');
+                expressionStack.push(B);
+                expressionStack.push(TREESIGN);
             } else {
                 expressionStack.push(c);
             }
@@ -59,7 +63,7 @@ public final class Parser {
 
     private static String findOpenBracket(final Stack<Character> stack) {
         StringBuilder content = new StringBuilder();
-        while (stack.peek() != '(') {
+        while (stack.peek() != OPEN_BRACKET) {
             content.append(stack.pop());
         }
         stack.pop();
@@ -126,8 +130,6 @@ public final class Parser {
                     return null;
                 }
             }
-
         }
-        return null;
     }
 }
