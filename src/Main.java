@@ -7,19 +7,24 @@ import java.util.Scanner;
  *
  * @author minux
  */
-public class Main {
+public final class Main {
+
+    private Main() {
+    }
 
     /**
      * Main function.
      *
      * @param args nothing
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
+
         Scanner sc = new Scanner(System.in);
-         // I know its not the best way to use a while loop but it's still in progress.
+        // I know its not the best way
+        // to use a while loop but it's still in progress.
         // TODO Improve the wile loop. So that it uses a boolean variable.
         while (true) {
-            System.out.println(Parser.parse(sc.nextLine()).calculate());
+            System.out.println(Parser.parse(sc.nextLine()));
         }
     }
 }

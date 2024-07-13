@@ -11,7 +11,7 @@ public interface Formula {
      *
      * @return the term as String
      */
-    public String print();
+    String print();
 
     /**
      * Calculate the mathematical-operation and returns the result.
@@ -19,5 +19,5 @@ public interface Formula {
      *
      * @return the result as double value
      */
-    public double calculate();
+    double calculate();
 }

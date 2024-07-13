@@ -1,23 +1,29 @@
 package minux.model.parsing;
 
-import minux.model.Divided;
 import minux.model.Formula;
-import minux.model.Minus;
 import minux.model.Number;
 import minux.model.Plus;
+import minux.model.Minus;
 import minux.model.Times;
+import minux.model.Divide;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 /**
- * This class parses the user input to the necessary datastructures for the calculation.
- * -> example: - user input: 3*5+5 ---> term in the datastructures: new Plus(new Times(new Number(3),new Number(5)),new Number(5))
+ * This class parses the user input to
+ * the necessary datastructures for the calculation.
+ * -> example: - user input: 3*5+5
+ * ---> term in the datastructures:
+ * new Plus(new Times(new Number(3),new Number(5)),new Number(5))
  *
  * @author minux
  */
 public final class Parser {
-    /**
-     * the priority of operations as a regex array
-     */
-    private static final String[] PRIOLIST = {"\\+", "\\-", "\\/", "\\*"};
+
+    private static List<Node> subTrees = new LinkedList<>();
 
     /**
      * Private constructor.
@@ -25,114 +31,103 @@ public final class Parser {
     private Parser() {
     }
 
-    public static Formula convertStringToFormula(String expression) {
-        if (expression.contains("(")) {
-            convertToTreeWithBrackets();
-        } else {
-            convertToTreeWithoutBrackets(expression.split(PRIOLIST[0]), 1);
-        }
-    }
-
-    private static OperationTree convertToTreeWithoutBrackets(String[] expressions, int index) {
-        OperationTree tree = new OperationTree(new OperationNote(Operations.));
-
-    }
-
-    private static OperationTree convertToTreeWithBrackets(String expression) {
-
-    }
-
     /**
-     * Parse a user input string to the correct datastructures
+     * Parse the input string to a formula.
      *
-     * @param expression the user input as string
-     * @return term in the datastructures
+     * @param expression user input via consol
+     * @return bill as formula
      */
-    public static Formula parse(String expression) {
-        // TODO Cleanup this method
-        // TODO Code a method the check whether the user input syntax is correct
-        //      -> user input without whitespaces
-
-        if (expression.contains("(")) {
-            expression = splitBrackets(expression);
-        }
-
-        return split(expression.split(PRIOLIST[0]), 1);
-    }
-
-    /**
-     * Support method to split the user input into smaller pieces with the same operation.
-     *
-     * @param expressionArray smaller pieces there are connected with the same operation
-     * @param index           index of the current operation
-     * @return the user input to the necessary datastructures for the calculation
-     */
-    private static Formula split(String[] expressionArray, int index) {
-        Formula[] formulas = new Formula[expressionArray.length];
-
-        for (int i = 0; i < expressionArray.length; i++) {
-            String currentExpression = expressionArray[i].trim();
-            // Regex for all possible double values
-            if (currentExpression.matches("-?\\d+(\\.\\d+)?")) {
-                formulas[i] = new Number(Double.parseDouble(currentExpression));
-            } else {
-                String[] subExpressions = currentExpression.split(PRIOLIST[index], index + 1);
-                formulas[i] = split(subExpressions, index + 1);
-            }
-        }
-        return switch (index - 1) {
-            case 0 -> new Plus(formulas);
-            case 1 -> new Minus(formulas);
-            case 2 -> new Divided(formulas);
-            case 3 -> new Times(formulas);
-            default -> null;
-        };
-    }
-
-    /**
-     * Support structure to handle brackets in the term.
-     * -> method in progress
-     *
-     * @param expression the user input
-     * @return the user input with simplified all parentheses
-     */
-    private static String splitBrackets(String expression) {
-        /**
-         *
-         * ()(), (())
-         * 3*(5+(3*5)-3)+(5*3)
-         */
-        // TODO Longer terms are solved to slow!!
-        //      Needs a faster algorithm!!!!
-        String subString = "";
-        int firstOpenBracket = 0;
-        int lastClosedBracket = 0;
-        for (int i = 0; i < expression.length(); i++) {
-            if (expression.charAt(i) == '(') {
-                int openBrackets = 1;
-                firstOpenBracket = i;
-                for (int t = i + 1; t < expression.length(); t++) {
-                    if (expression.charAt(t) == '(') {
-                        openBrackets++;
-                    } else if (expression.charAt(t) == ')') {
-                        openBrackets--;
-                    }
-                    if (openBrackets == 0) {
-                        subString = expression.substring(firstOpenBracket + 1, t);
-                        lastClosedBracket = t;
-                        break;
-                    }
+    public static Formula parse(final String expression) {
+        Stack<Character> expressionStack = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == ')') {
+                int index = subTrees.size();
+                subTrees.add(createTree(findOpenBracket(expressionStack)));
+                for (char c1 : ("" + index).toCharArray()) {
+                    expressionStack.push(c1);
                 }
-                break;
+                expressionStack.push('b');
+                expressionStack.push('#');
+            } else {
+                expressionStack.push(c);
             }
         }
-        String prefix = firstOpenBracket > 0 ? expression.substring(0, firstOpenBracket) : "";
-        String postfix = lastClosedBracket < expression.length() - 1 ? expression.substring(lastClosedBracket + 1, expression.length()) : "";
-        if (subString.contains("(")) {
-            return prefix + splitBrackets(subString) + postfix;
-        } else {
-            String resultPart = prefix + split(subString.split(PRIOLIST[0]), 1).calculate() + postfix;
-            return resultPart.contains("(") ? splitBrackets(resultPart) : String.valueOf(split(resultPart.split(PRIOLIST[0]), 1).calculate());
+        StringBuilder formula = new StringBuilder();
+        expressionStack.forEach(formula::append);
+        return preOrder(createTree(formula.toString()));
+    }
+
+    private static String findOpenBracket(final Stack<Character> stack) {
+        StringBuilder content = new StringBuilder();
+        while (stack.peek() != '(') {
+            content.append(stack.pop());
         }
+        stack.pop();
+        return content.reverse().toString();
+    }
+
+    private static Node createTree(final String input) {
+        Operation op = Operation.get(input);
+        if (op == null) {
+            return new Node(Double.parseDouble(input));
+        } else {
+            return splitOperation(op, input);
+        }
+    }
+
+    private static Node splitOperation(final Operation operation,
+                                       final String expression) {
+        String[] expressionArray = expression.split("\\"
+                + operation.getSymbol());
+        Node parent = new Node(operation);
+
+        for (String s : expressionArray) {
+            Operation nextOp = Operation.get(s);
+            if (nextOp == null) {
+                if (s.matches("\\#b[0-9]+\\b")) {
+                    parent.addChild(subTrees.get(
+                            Integer.parseInt(s.substring(2))));
+                } else if (s.matches("[0-9]+b#")) {
+                    parent.addChild(subTrees.get(Integer.parseInt(
+                            String.valueOf(s.charAt(0)))));
+                } else {
+                    parent.addChild(new Node(s.isEmpty() ? 0
+                            : Double.parseDouble(s)));
+                }
+            } else {
+                parent.addChild(splitOperation(nextOp, s));
+            }
+        }
+        return parent;
+    }
+
+    private static Formula preOrder(final Node node) {
+        if (node.getContent().isNumeric()) {
+            return new Number(node.getContent().getdValue());
+        } else {
+            ArrayList<Node> children = node.getChildren();
+            Formula[] formulas = new Formula[children.size()];
+            children.forEach(node1 ->
+                    formulas[children.indexOf(node1)] = preOrder(node1));
+            switch (node.getContent().getoValue()) {
+                case PLUS -> {
+                    return new Plus(formulas);
+                }
+                case MINUS -> {
+                    return new Minus(formulas);
+                }
+                case TIMES -> {
+                    return new Times(formulas);
+                }
+                case DEVIDE -> {
+                    return new Divide(formulas);
+                }
+                default -> {
+                    return null;
+                }
+            }
+
+        }
+        return null;
     }
 }

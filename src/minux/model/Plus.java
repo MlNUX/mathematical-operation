@@ -10,9 +10,10 @@ public class Plus extends MathematicalOperation implements Formula {
      * Constructor to create a plus-operation.
      *
      * @param formulas list of addend
-     *                 -> a addend doesn't have to be a number. It could also be a term like (2 + 1)*3
+     *                 -> a addend doesn't have to be a number.
+     *                 It could also be a term like (2 + 1)*3
      */
-    public Plus(Formula... formulas) {
+    public Plus(final Formula... formulas) {
         super(formulas);
     }
 

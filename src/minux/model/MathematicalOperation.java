@@ -14,9 +14,8 @@ abstract class MathematicalOperation {
      *
      * @param formulas the parts of the operation
      */
-    protected MathematicalOperation(Formula... formulas) {
-
-        this.formulas = formulas;
+    protected MathematicalOperation(final Formula... formulas) {
+        this.formulas = formulas.clone();
     }
 
     /**

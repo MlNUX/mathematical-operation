@@ -10,9 +10,10 @@ public class Minus extends MathematicalOperation implements Formula {
      * Constructor to create a minus-operation.
      *
      * @param formulas list of subtrahend terms
-     *                 -> a subtrahend term doesn't have to be a number. It could also be a term like (2 + 1)*3
+     *                 -> a subtrahend term doesn't have to be a number.
+     *                 It could also be a term like (2 + 1)*3
      */
-    public Minus(Formula... formulas) {
+    public Minus(final Formula... formulas) {
         super(formulas);
     }
 

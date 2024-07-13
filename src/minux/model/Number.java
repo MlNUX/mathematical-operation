@@ -14,7 +14,7 @@ public class Number implements Formula {
      *
      * @param x the number as double
      */
-    public Number(double x) {
+    public Number(final double x) {
         this.x = x;
     }
 
