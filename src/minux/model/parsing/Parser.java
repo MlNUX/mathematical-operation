@@ -1,15 +1,12 @@
 package minux.model.parsing;
 
-import minux.model.Formula;
-import minux.model.Number;
 import minux.model.Plus;
 import minux.model.Minus;
 import minux.model.Times;
 import minux.model.Divide;
+import minux.model.Number;
+import minux.model.Formula;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -24,15 +21,14 @@ import java.util.Stack;
 public final class Parser {
 
     private static final char CLOSED_BRACKET = ')';
-    private static final char B = 'b';
-    private static final char TREESIGN = '#';
     private static final char OPEN_BRACKET = '(';
-    private static List<Node> subTrees = new LinkedList<>();
+    private static final String REGEX_PREFIX = "\\";
 
     /**
-     * Private constructor.
+     * Private Constructor.
      */
     private Parser() {
+
     }
 
     /**
@@ -46,97 +42,79 @@ public final class Parser {
         Stack<Character> expressionStack = new Stack<>();
         for (char c : expression.toCharArray()) {
             if (c == CLOSED_BRACKET) {
-                int index = subTrees.size();
-                subTrees.add(createTree(findOpenBracket(expressionStack)));
-                for (char c1 : ("" + index).toCharArray()) {
-                    expressionStack.push(c1);
+                char[] result = calculateBracket(expressionStack).toCharArray();
+                for (char value : result) {
+                    expressionStack.push(value);
                 }
-                expressionStack.push(B);
-                expressionStack.push(TREESIGN);
             } else {
                 expressionStack.push(c);
             }
         }
         StringBuilder formula = new StringBuilder();
         expressionStack.forEach(formula::append);
-        return preOrder(createTree(formula.toString()));
+        return converteToFormula(formula.toString());
     }
 
     //TODO add java-doc
-    private static String findOpenBracket(final Stack<Character> stack) {
+    private static String calculateBracket(final Stack<Character> stack) {
+        return "" + findOpenBracket(stack).calculate();
+    }
+
+    //TODO add java-doc
+    private static Formula findOpenBracket(final Stack<Character> stack) {
         StringBuilder content = new StringBuilder();
         while (stack.peek() != OPEN_BRACKET) {
             content.append(stack.pop());
         }
         stack.pop();
-        return content.reverse().toString();
+        String input = content.reverse().toString();
+        return converteToFormula(input);
     }
 
     //TODO add java-doc
-    private static Node createTree(final String input) {
-        Operation op = Operation.get(input);
+    private static Formula converteToFormula(final String expression) {
+        Operation op = Operation.get(expression);
         if (op == null) {
-            return new Node(Double.parseDouble(input));
+            return new Number(Double.parseDouble(expression));
         } else {
-            return splitOperation(op, input);
+            return splitOperation(op, expression);
         }
     }
 
     //TODO add java-doc
-    private static Node splitOperation(final Operation operation,
-                                       final String expression) {
-        String[] expressionArray = expression.split("\\"
+    private static Formula splitOperation(final Operation operation,
+                                          final String expression) {
+        String[] expressionArray = expression.split(REGEX_PREFIX
                 + operation.getSymbol());
-        Node parent = new Node(operation);
-
-        for (String s : expressionArray) {
+        Formula[] formulas = new Formula[expressionArray.length];
+        for (int i = 0; i < expressionArray.length; i++) {
+            String s = expressionArray[i];
             Operation nextOp = Operation.get(s);
             if (nextOp == null) {
-                if (s.matches("\\#b[0-9]+\\b")) {
-                    parent.addChild(subTrees.get(
-                            Integer.parseInt(s.substring(2))));
-                } else if (s.matches("[0-9]+b#")) {
-                    parent.addChild(subTrees.get(Integer.parseInt(
-                            String.valueOf(s.charAt(0)))));
-                } else {
-                    parent.addChild(new Node(s.isEmpty() ? 0
-                            : Double.parseDouble(s)));
-                }
+                formulas[i] = new Number(s.isEmpty() ? 0
+                        : Double.parseDouble(s));
             } else {
-                parent.addChild(splitOperation(nextOp, s));
+                formulas[i] = splitOperation(nextOp, s);
             }
         }
-        return parent;
+        switch (operation) {
+            case PLUS -> {
+                return new Plus(formulas);
+            }
+            case MINUS -> {
+                return new Minus(formulas);
+            }
+            case TIMES -> {
+                return new Times(formulas);
+            }
+            case DEVIDE -> {
+                return new Divide(formulas);
+            }
+            default -> {
+                return null;
+            }
+        }
+
     }
 
-    //TODO add java-doc
-    private static Formula preOrder(final Node node) {
-        if (node.getContent().isNumeric()) {
-            return new Number(node.getContent().getdValue());
-        } else {
-            ArrayList<Node> children = node.getChildren();
-            Formula[] formulas = new Formula[children.size()];
-            children.forEach(node1 ->
-                    formulas[children.indexOf(node1)] = preOrder(node1));
-            Formula result;
-            switch (node.getContent().getoValue()) {
-                case PLUS -> {
-                    result = new Plus(formulas);
-                }
-                case MINUS -> {
-                    result = new Minus(formulas);
-                }
-                case TIMES -> {
-                    result = new Times(formulas);
-                }
-                case DEVIDE -> {
-                    result = new Divide(formulas);
-                }
-                default -> {
-                    result = null;
-                }
-            }
-            return result;
-        }
-    }
 }

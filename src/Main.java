@@ -1,4 +1,5 @@
 import minux.model.parsing.Parser;
+import minux.model.parsing.ParserWithTree;
 
 import java.util.Scanner;
 
