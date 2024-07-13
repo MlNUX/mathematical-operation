@@ -42,6 +42,7 @@ public final class Parser {
      * @return bill as formula
      */
     public static Formula parse(final String expression) {
+        //TODO add method to check input whether its correcty
         Stack<Character> expressionStack = new Stack<>();
         for (char c : expression.toCharArray()) {
             if (c == CLOSED_BRACKET) {
@@ -61,6 +62,7 @@ public final class Parser {
         return preOrder(createTree(formula.toString()));
     }
 
+    //TODO add java-doc
     private static String findOpenBracket(final Stack<Character> stack) {
         StringBuilder content = new StringBuilder();
         while (stack.peek() != OPEN_BRACKET) {
@@ -70,6 +72,7 @@ public final class Parser {
         return content.reverse().toString();
     }
 
+    //TODO add java-doc
     private static Node createTree(final String input) {
         Operation op = Operation.get(input);
         if (op == null) {
@@ -79,6 +82,7 @@ public final class Parser {
         }
     }
 
+    //TODO add java-doc
     private static Node splitOperation(final Operation operation,
                                        final String expression) {
         String[] expressionArray = expression.split("\\"
@@ -105,6 +109,7 @@ public final class Parser {
         return parent;
     }
 
+    //TODO add java-doc
     private static Formula preOrder(final Node node) {
         if (node.getContent().isNumeric()) {
             return new Number(node.getContent().getdValue());
@@ -113,23 +118,25 @@ public final class Parser {
             Formula[] formulas = new Formula[children.size()];
             children.forEach(node1 ->
                     formulas[children.indexOf(node1)] = preOrder(node1));
+            Formula result;
             switch (node.getContent().getoValue()) {
                 case PLUS -> {
-                    return new Plus(formulas);
+                    result = new Plus(formulas);
                 }
                 case MINUS -> {
-                    return new Minus(formulas);
+                    result = new Minus(formulas);
                 }
                 case TIMES -> {
-                    return new Times(formulas);
+                    result = new Times(formulas);
                 }
                 case DEVIDE -> {
-                    return new Divide(formulas);
+                    result = new Divide(formulas);
                 }
                 default -> {
-                    return null;
+                    result = null;
                 }
             }
+            return result;
         }
     }
 }

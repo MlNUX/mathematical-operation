@@ -24,7 +24,7 @@ public final class Main {
         // to use a while loop but it's still in progress.
         // TODO Improve the wile loop. So that it uses a boolean variable.
         while (true) {
-            System.out.println(Parser.parse(sc.nextLine()));
+            System.out.println(Parser.parse(sc.nextLine()).calculate());
         }
     }
 }
