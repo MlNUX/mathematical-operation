@@ -19,7 +19,6 @@ public final class Main {
      * @param args nothing
      */
     public static void main(final String[] args) {
-
         Scanner sc = new Scanner(System.in);
         // I know its not the best way
         // to use a while loop but it's still in progress.
