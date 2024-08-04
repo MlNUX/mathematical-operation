@@ -23,8 +23,9 @@ public final class Main {
         // I know its not the best way
         // to use a while loop but it's still in progress.
         // TODO Improve the wile loop. So that it uses a boolean variable.
+        // TODO -> (2-1) throws a exception
         while (true) {
-            System.out.println(Parser.parse(sc.nextLine()).calculate());
+            System.out.println(ParserWithTree.parse(sc.nextLine()).calculate());
         }
     }
 }

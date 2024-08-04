@@ -1,11 +1,7 @@
 package minux.model.parsing;
 
-import minux.model.Plus;
-import minux.model.Minus;
-import minux.model.Times;
-import minux.model.Divide;
+import minux.model.*;
 import minux.model.Number;
-import minux.model.Formula;
 
 import java.util.Stack;
 
@@ -91,8 +87,12 @@ public final class Parser {
             String s = expressionArray[i];
             Operation nextOp = Operation.get(s);
             if (nextOp == null) {
-                formulas[i] = new Number(s.isEmpty() ? 0
-                        : Double.parseDouble(s));
+                if (s.equalsIgnoreCase("x")) {
+                    formulas[i] = new X();
+                } else {
+                    formulas[i] = new Number(s.isEmpty() ? 0
+                            : Double.parseDouble(s));
+                }
             } else {
                 formulas[i] = splitOperation(nextOp, s);
             }
